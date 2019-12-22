@@ -49,8 +49,8 @@ from scipy.sparse import lil_matrix
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-dataset = 'AIDS'
-top_dir = Path('/local/scratch/ssd2/jkahn')
+dataset = 'PROTEINS_full'
+top_dir = Path('/local/scratch/ssd2/jkahn/benchmarks/')
 dataset_dir = top_dir / dataset
 
 # ## Load the data

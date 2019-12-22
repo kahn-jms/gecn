@@ -40,13 +40,18 @@ session = tf.Session(config=config)
 
 # # Load datum
 
-dataset = 'AIDS'
-top_dir = Path('/local/scratch/ssd2/jkahn')
+dataset = 'PROTEINS_full' #'AIDS'
+top_dir = Path('/local/scratch/ssd2/jkahn/benchmarks')
 dataset_dir = top_dir / dataset
 
+# +
 feat_X = np.load(dataset_dir / 'feat_X.npy')
 adj_X = np.load(dataset_dir / 'adj_X.npy')
 y = np.load(dataset_dir / 'y.npy')
+
+# Just for this dataset
+y = y - 1
+# -
 
 # ### Splitty brah
 
@@ -82,17 +87,22 @@ def make_prediction_model(l2_strength=1e-5, emb_size=16):
 #     )(pdg_input)
 
     l = FeatureStack()([feat_input, adj_input])
-    l = layers.Conv2D(8, (1, 1), use_bias=False)(l)
-    l = layers.Conv2D(8, (1, 1), use_bias=False)(l)
-    l = GINonStack(8, use_bias=False)(l)
+    l = layers.Conv2D(32, (1, 1), use_bias=False)(l)
+    l = layers.Conv2D(32, (1, 1), use_bias=False)(l)
+    l = GINonStack(32, use_bias=False)(l)
     
     l = FeatureStack()([l, adj_input])
-    l = layers.Conv2D(8, (1, 1), use_bias=False)(l)
-    l = layers.Conv2D(8, (1, 1), use_bias=False)(l)
-    l = GINonStack(8, use_bias=False)(l)
+    l = layers.Conv2D(32, (1, 1), use_bias=False)(l)
+    l = layers.Conv2D(32, (1, 1), use_bias=False)(l)
+    l = GINonStack(32, use_bias=False)(l)
+    
+    l = FeatureStack()([l, adj_input])
+    l = layers.Conv2D(32, (1, 1), use_bias=False)(l)
+    l = layers.Conv2D(32, (1, 1), use_bias=False)(l)
+    l = GINonStack(32, use_bias=False)(l)
     
     l = layers.GlobalAveragePooling1D()(l)
-    #l = layers.LeakyReLU()(layers.Dense(32, kernel_regularizer=regularizers.l2(l2_strength))(l))
+    l = layers.LeakyReLU()(layers.Dense(8, kernel_regularizer=regularizers.l2(l2_strength))(l))
 
     output_layer = layers.Dense(1, activation='sigmoid')(l)
     
@@ -110,17 +120,17 @@ pred_model = make_prediction_model()
 
 pred_model.fit(
     x={
-        'adj_input': adj_X_train,
-        'feat_input': feat_X_train,
+        'adj_input': adj_X_train[:200],
+        'feat_input': feat_X_train[:200],
     },
-    y=y_train,
-    batch_size=32,
+    y=y_train[:200],
+    batch_size=8,
     epochs=100,
     validation_data=(
         {
-            'adj_input': adj_X_test,
-            'feat_input': feat_X_test, 
+            'adj_input': adj_X_test[:20],
+            'feat_input': feat_X_test[:20], 
         },
-        y_test,
+        y_test[:20],
     )
 )
