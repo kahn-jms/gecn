@@ -51,6 +51,7 @@ import matplotlib.pyplot as plt
 
 dataset = 'AIDS'
 top_dir = Path('/local/scratch/ssd2/jkahn')
+dataset_dir = top_dir / dataset
 
 # ## Load the data
 
@@ -113,3 +114,10 @@ plt.figure()
 plt.imshow(adj_X[0, :47, :47])
 
 plt.figure()
+plt.hist(feat_X[:, 0, 2], bins=30)
+
+# ## Save the data
+
+np.save(dataset_dir / 'feat_X.npy', feat_X)
+np.save(dataset_dir / 'adj_X.npy', adj_X)
+np.save(dataset_dir / 'y.npy', labels_df.values)
