@@ -8,4 +8,4 @@ The notebook is designed to created training data from graph benchmark datasets 
 
 ## Concept
 
-![alt-right text][GECN.pdf]
+![alt-right text](GECN.pdf)
