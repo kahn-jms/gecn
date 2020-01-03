@@ -48,6 +48,7 @@ import numpy as np
 from scipy.sparse import lil_matrix
 from pathlib import Path
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import normalize
 
 dataset = 'PROTEINS_full'
 top_dir = Path('/local/scratch/ssd2/jkahn/benchmarks/')
@@ -113,8 +114,58 @@ for i, size in enumerate(graph_sizes):
 plt.figure()
 plt.imshow(adj_X[0, :47, :47])
 
+# ## Preprocess the features
+
+# +
+f, ax = plt.subplots(8, 4, figsize=(15, 15))
+for idx in range(feat_X.shape[-1]):
+#     print(idx, idx//4, idx%4)
+    ax[int(idx//4), idx%4].hist(feat_X[:, :2, idx], bins=60)
+    ax[int(idx//4), idx%4].title.set_text(idx)
+
+# plt.figure()
+# plt.hist(feat_X[:, 1, 28], bins='auto')
+plt.show()
+# -
+
 plt.figure()
-plt.hist(feat_X[:, 0, 2], bins=30)
+plt.hist(feat_X[:, 1, 4], bins='auto')
+plt.show()
+
+# +
+# Do standard normalisation on all features (can do 4, will still need to one-hot encode that after)
+x_min = feat_X.min(axis=(0, 1), keepdims=False)
+x_max = feat_X.max(axis=(0, 1), keepdims=False)
+
+# x_min.shape
+norm_X = (feat_X - x_min)/(x_max-x_min)
+norm_X.shape
+# -
+
+np.unique(norm_X[0, :, 4])
+
+# Manually adding number of classes here, and the step size
+cat_X = norm_X[:, :, 4]
+one_hot = (np.arange(3) == (2*cat_X[...,None])).astype(int)
+one_hot[:, :, 1].max()
+
+# Delete the old column and insert one-hots
+prep_X = np.delete(norm_X, 4, -1)
+prep_X = np.concatenate([prep_X, one_hot], axis=-1)
+prep_X.shape
+
+# +
+# Plot after prepalisation
+f, ax = plt.subplots(8, 4, figsize=(15, 15))
+for idx in range(prep_X.shape[-1]):
+#     print(idx, idx//4, idx%4)
+    ax[int(idx//4), idx%4].hist(prep_X[:, :2, idx], bins=60)
+    ax[int(idx//4), idx%4].title.set_text(idx)
+
+# plt.figure()
+# plt.hist(feat_X[:, 1, 28], bins='auto')
+plt.show()
+# -
 
 # ## Save the data
 
