@@ -8,4 +8,4 @@ The notebook is designed to created training data from graph benchmark datasets 
 
 ## Concept
 
-![alternative textimus](https://github.com/kahn-jms/gecn/blob/master/GECN.pdf "Single GECN node update")
+![alternative textimus](./GECN.png?raw=true "Single GECN node update")
