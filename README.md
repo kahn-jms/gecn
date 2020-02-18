@@ -1,6 +1,7 @@
 # Graph embedding convolutional network
 
 Demonstration of implementing a fully parallelisable message passing graph convolutional network.
+The Python files within this repository are Jupyter notebooks that can be opened with the [Jupytext extension](https://github.com/mwouts/jupytext).
 
 ## Creating training data
 
